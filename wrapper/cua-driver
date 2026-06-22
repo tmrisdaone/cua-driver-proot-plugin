@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Termux-side wrapper for cua-driver running inside proot-distro ubuntu.
+# Hermes (and any other Termux tool that does shutil.which("cua-driver"))
+# finds this on $PATH; the script delegates to the cua-driver-rs binary
+# installed at /usr/local/bin/cua-driver inside the proot ubuntu rootfs.
+#
+# The --shared-tmp flag exposes Termux's $TMPDIR (which contains
+# /data/.../usr/tmp/.X11-unix/X0) to the proot guest at /tmp, so the
+# X11 socket from termux-x11 is reachable as /tmp/.X11-unix/X0.
+#
+# Stdin/stdout are passed through for the MCP stdio transport.
+
+set -e
+
+# Re-launch under termux-x11 if DISPLAY isn't set yet (best-effort; harmless
+# if the daemon is already running on :0).
+[ -n "${DISPLAY:-}" ] || export DISPLAY=:0
+
+exec proot-distro login ubuntu --shared-tmp -- env \
+    DISPLAY="${DISPLAY:-:0}" \
+    XDG_RUNTIME_DIR=/tmp \
+    HOME=/root \
+    TERM="${TERM:-xterm-256color}" \
+    LANG="${LANG:-C.UTF-8}" \
+    LC_ALL="${LC_ALL:-C.UTF-8}" \
+    /usr/local/bin/cua-driver "$@"

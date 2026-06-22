@@ -1,0 +1,11 @@
+name: cua-driver-proot
+version: 0.1.0
+description: Run cua-driver-rs (the cua computer-use agent daemon) inside Termux's proot-distro ubuntu so Hermes can control X11 apps from a phone. Provides self-install, doctor, upgrade, and AT-SPI setup tools.
+author: nxna
+provides_tools:
+  - cua_driver_install
+  - cua_driver_doctor
+  - cua_driver_upgrade
+  - cua_driver_atspi_setup
+provides_skills:
+  - cua-driver-proot
